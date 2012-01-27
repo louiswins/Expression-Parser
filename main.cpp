@@ -10,8 +10,12 @@ int main() {
 
 	ptree_ptr expr = p.read_expression();
 
-	expr->print();
-	cout << "result: " << expr->eval() << "\n";
+	if (expr) {
+		expr->print();
+		cout << "result: " << expr->eval() << "\n";
+	} else {
+		cout << "no expression received.\n";
+	}
 
 	return 0;
 }

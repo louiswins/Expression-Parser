@@ -65,7 +65,7 @@ private:
 	ptree_ptr at_op();
 	ptree_ptr term();
 	ptree_ptr number();
-	bool match(const std::string tok, const std::string msg);
+	void match(const std::string tok);
 
 	lexer l;
 };
