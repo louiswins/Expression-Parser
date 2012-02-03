@@ -2,39 +2,38 @@
 #include "parser.h"
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
-
-class syntax_error : public std::exception {};
+using namespace std;
 
 ptree_ptr parser::read_expression() {
-	l.getToken();
-	try {
-		ptree_ptr ret = ampersand_op();
-		if (l.hasTokens()) {
-			throw syntax_error();
-		}
-		return ret;
-	} catch (syntax_error &e) {
-		std::cout << "line " << l.line_no() << " syntax error\n";
+	_l.getToken(); // "prime the pump"
+	ptree_ptr ret = ampersand_op();
+	if (!match("\n")) {
+		_l.flush_line();
 		return ptree_ptr();
 	}
+	_l.flush_line();
+	return ret;
 }
 
 ptree_ptr parser::ampersand_op() {
 	ptree_ptr ret = percent_op();
 
-	while (l.token() == "&") {
+	while (ret && _l.token() == "&") {
 		match("&");
-		ret = ptree_ptr(new amp_operator(ret, percent_op()));
+		ptree_ptr tmp = percent_op();
+		if (!tmp) return ptree_ptr();
+		ret = ptree_ptr(new amp_operator(ret, tmp));
 	}
 
 	return ret;
 }
 
 ptree_ptr parser::percent_op() {
-	if (l.token() == "%") {
+	if (_l.token() == "%") {
 		match("%");
-		return ptree_ptr(new pct_operator(percent_op()));
+		ptree_ptr tmp = percent_op();
+		if (!tmp) return ptree_ptr();
+		return ptree_ptr(new pct_operator(tmp));
 	} else {
 		return at_op();
 	}
@@ -43,18 +42,20 @@ ptree_ptr parser::percent_op() {
 ptree_ptr parser::at_op() {
 	ptree_ptr ret = term();
 
-	if (l.token() == "@") {
+	if (ret && _l.token() == "@") {
 		match("@");
-		ret = ptree_ptr(new at_operator(ret, at_op()));
+		ptree_ptr tmp = at_op();
+		if (!tmp) return ptree_ptr();
+		ret = ptree_ptr(new at_operator(ret, tmp));
 	}
 	return ret;
 }
 
 ptree_ptr parser::term() {
-	if (l.token() == "(") {
+	if (_l.token() == "(") {
 		match("(");
 		ptree_ptr ret = ampersand_op();
-		match(")");
+		if (!match(")")) return ptree_ptr();
 		return ret;
 	} else {
 		return number();
@@ -63,16 +64,22 @@ ptree_ptr parser::term() {
 
 ptree_ptr parser::number() {
 	int ret;
-	std::istringstream ss(l.token());
-	ss >> ret;
-	match(l.token());
+	if (!(istringstream(_l.token()) >> ret)) {
+		// the conversion failed; it's not actually a number.
+		return ptree_ptr();
+	}
+	match(_l.token());
 	return ptree_ptr(new int_literal(ret));
 }
 
-void parser::match(const std::string tok) {
-	if (l.hasTokens() && tok == l.token()) {
-		l.getToken();
+bool parser::match(const string tok) {
+	// lexical error
+	if (!_l.good()) return false;
+	if (tok == _l.token()) {
+		_l.getToken();
+		return true;
 	} else {
-		throw syntax_error();
+		cout << "line " << _l.line_no() << " syntax error\n";
+		return false;
 	}
 }
