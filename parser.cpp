@@ -5,13 +5,11 @@
 using namespace std;
 
 ptree_ptr parser::read_expression() {
-	_l.getToken(); // "prime the pump"
 	ptree_ptr ret = ampersand_op();
 	if (!match("\n")) {
 		_l.flush_line();
 		return ptree_ptr();
 	}
-	_l.flush_line();
 	return ret;
 }
 

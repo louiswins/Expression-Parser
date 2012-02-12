@@ -6,19 +6,17 @@
 
 class lexer {
 public:
-	lexer() : _line_no(1), is_error(false) {}
+	lexer() : _line_no(1), is_error(false), must_get_token(true) {}
 
-	void getToken();
+	void getToken() { must_get_token = true; }
 
-	bool hasToken() const {
-		// cin.eof() doesn't return true until you've tried to read a
-		// character and failed.
-		return std::cin.peek() != EOF;
-	}
-	
+	// cin.eof() doesn't return true until you've tried to read a
+	// character and failed.
+	bool hasToken() const { return std::cin.peek() != EOF; }
+
 	bool good() const { return !is_error && std::cin.good(); }
-	
-	std::string token() const { return (is_error) ? "" : _token; }
+
+	std::string token();
 
 	unsigned line_no() const { return _line_no; }
 
@@ -26,6 +24,7 @@ public:
 		while (!std::cin.eof() && std::cin.get() != '\n');
 		++_line_no;
 		is_error = false;
+		must_get_token = true;
 	}
 
 private:
@@ -36,9 +35,12 @@ private:
 		}
 	}
 
+	void extract_token();
+
 	unsigned _line_no;
-	std::string _token;
 	bool is_error;
+	std::string _token;
+	bool must_get_token;
 };
 
 #endif /* LEXER_H */
