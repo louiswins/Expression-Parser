@@ -10,7 +10,7 @@ int main() {
 	parser p;
 
 	while (p.has_expression()) {
-		ptree_ptr expr = p.read_expression();
+		ptree::ptr expr = p.read_expression();
 
 		if (expr) {
 			expr->print();
