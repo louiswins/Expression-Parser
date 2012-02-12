@@ -1,6 +1,6 @@
 #include "parser.h"
 #include "lexer.h"
-#include "ops.h"
+#include "ptree.h"
 #include <iostream>
 #include <tr1/memory>
 using namespace std;

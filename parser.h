@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "ops.h"
+#include "ptree.h"
 #include "lexer.h"
 #include <string>
 
