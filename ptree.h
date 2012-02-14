@@ -10,6 +10,7 @@ public:
 	virtual int eval() const = 0;
 	void print() const { print(0); }
 	virtual void print(int indent) const = 0;
+	virtual ~ptree() {}
 };
 
 class int_literal : public ptree {
