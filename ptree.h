@@ -22,7 +22,7 @@ public:
 		std::cout << v << "\n";
 	}
 
-protected:
+private:
 	int v;
 };
 
