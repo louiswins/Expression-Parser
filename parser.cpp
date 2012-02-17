@@ -42,7 +42,7 @@ ptree::ptr parser::at_op() {
 
 	if (ret && _l.token() == "@") {
 		match("@");
-		ptree::ptr tmp = at_op();
+		ptree::ptr tmp = percent_op();
 		if (!tmp) return ptree::ptr();
 		ret = ptree::ptr(new at_operator(ret, tmp));
 	}
@@ -77,7 +77,9 @@ bool parser::match(const string tok) {
 		_l.getToken();
 		return true;
 	} else {
-		cout << "line " << _l.line_no() << " syntax error\n";
+		unsigned err_line = _l.line_no();
+		if (_l.token() == "\n") err_line--;
+		cout << "line " << err_line << " syntax error\n";
 		return false;
 	}
 }
