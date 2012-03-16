@@ -1,7 +1,7 @@
 TARGET = a.out
 OBJS = main.o parser.o lexer.o ptree.o
 
-CXXFLAGS = -O2 -Wall -pedantic -s
+CXXFLAGS = -O2 -Wall -pedantic -s -std=c++0x
 
 all: $(TARGET)
 

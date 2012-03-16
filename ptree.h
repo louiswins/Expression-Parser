@@ -2,11 +2,11 @@
 #define PTREE_H
 
 #include <iostream>
-#include <tr1/memory>
+#include <memory>
 
 class ptree {
 public:
-	typedef std::tr1::shared_ptr<ptree> ptr;
+	typedef std::unique_ptr<ptree> ptr;
 	virtual int eval() const = 0;
 	void print() const { print(0); }
 	virtual void print(int indent) const = 0;
@@ -28,7 +28,7 @@ private:
 
 class amp_operator : public ptree {
 public:
-	amp_operator(ptree::ptr left, ptree::ptr right) : l(left), r(right) {}
+	amp_operator(ptree::ptr left, ptree::ptr right) : l(std::move(left)), r(std::move(right)) {}
 	amp_operator(ptree *left, ptree *right) : l(left), r(right) {}
 	int eval() const;
 	void print(int indent) const;
@@ -38,7 +38,7 @@ private:
 };
 class at_operator : public ptree {
 public:
-	at_operator(ptree::ptr left, ptree::ptr right) : l(left), r(right) {}
+	at_operator(ptree::ptr left, ptree::ptr right) : l(std::move(left)), r(std::move(right)) {}
 	at_operator(ptree *left, ptree *right) : l(left), r(right) {}
 	int eval() const;
 	void print(int indent) const;
@@ -48,7 +48,7 @@ private:
 };
 class pct_operator : public ptree {
 public:
-	pct_operator(ptree::ptr tree) : t(tree) {}
+	pct_operator(ptree::ptr tree) : t(std::move(tree)) {}
 	pct_operator(ptree *tree) : t(tree) {}
 	int eval() const;
 	void print(int indent) const;

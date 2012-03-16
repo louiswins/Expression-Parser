@@ -20,7 +20,7 @@ ptree::ptr parser::ampersand_op() {
 		match("&");
 		ptree::ptr tmp = percent_op();
 		if (!tmp) return ptree::ptr();
-		ret = ptree::ptr(new amp_operator(ret, tmp));
+		ret = ptree::ptr(new amp_operator(std::move(ret), std::move(tmp)));
 	}
 
 	return ret;
@@ -31,7 +31,7 @@ ptree::ptr parser::percent_op() {
 		match("%");
 		ptree::ptr tmp = percent_op();
 		if (!tmp) return ptree::ptr();
-		return ptree::ptr(new pct_operator(tmp));
+		return ptree::ptr(new pct_operator(std::move(tmp)));
 	} else {
 		return at_op();
 	}
@@ -44,7 +44,7 @@ ptree::ptr parser::at_op() {
 		match("@");
 		ptree::ptr tmp = percent_op();
 		if (!tmp) return ptree::ptr();
-		ret = ptree::ptr(new at_operator(ret, tmp));
+		ret = ptree::ptr(new at_operator(std::move(ret), std::move(tmp)));
 	}
 	return ret;
 }
